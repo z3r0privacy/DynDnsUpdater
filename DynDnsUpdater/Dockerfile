@@ -19,4 +19,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "DynDnsUpdater.dll"]
 
-VOLUME /appdata:ro
+VOLUME /appdata
