@@ -1,0 +1,22 @@
+﻿{
+  "settings": {
+    "ipCheckHost": "http://checkip.dyndns.com/",
+    "refreshInterval": 15
+  },
+  "services": [
+    {
+      "name": "All-Inkl",
+      "url": "dyndns.kasserver.com/?myip={0}",
+      "auth": "basic",
+      "httpMethod": "GET"
+    }
+  ],
+  "domains": [
+    {
+      "fqdn": "test.domain.com",
+      "service": "",
+      "user": "",
+      "password": ""
+    }
+  ]
+}

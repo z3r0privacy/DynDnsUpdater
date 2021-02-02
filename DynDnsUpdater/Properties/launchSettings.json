@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DynDnsUpdater": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
