@@ -30,8 +30,15 @@ namespace DynDnsUpdater
                 new BasicAuthorization()
             };
 
+            var updateProviders = new IUpdateProvider[]
+            {
+                new AllInklUpdateProvider(),
+                new MsDnsUpdateProvider(),
+                new NginxSSHUpdateProvider()
+            };
+
             // check configuration
-            var configErrors = CheckConfiguration(config, authenticationMethods);
+            var configErrors = CheckConfiguration(config, authenticationMethods, updateProviders);
             if (configErrors.Count > 0)
             {
                 Console.WriteLine($"Config check failed due to the following errors:");
@@ -71,15 +78,14 @@ namespace DynDnsUpdater
                             try
                             {
                                 var service = config.Services.First(s => s.Name.Equals(d.Service, StringComparison.OrdinalIgnoreCase));
-                                var request = WebRequest.CreateHttp(string.Format(service.Url, ip, d.Fqdn));
-                                authenticationMethods.First(a => a.Name.Equals(service.Auth, StringComparison.OrdinalIgnoreCase)).AttachAuthentication(request, d);
-                                request.Method = service.HttpMethod ?? "GET";
-                                var response = (HttpWebResponse)request.GetResponse();
-                                if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 400)
+                                var updater = updateProviders.First(p => p.ProviderName.Equals(service.Type, StringComparison.OrdinalIgnoreCase));
+                                if (updater.UpdateIP(ip, d, service))
                                 {
-                                    throw new Exception($"Failed to refresh IP because of response code {response.StatusCode}");
-                                }
-                                Console.WriteLine($"Updated IP for {d.Fqdn}");
+                                    Console.WriteLine($"Updated IP for {d.Fqdn} using {updater.ProviderName}");
+                                } else
+                                {
+                                    Console.WriteLine($"Failed to update IP for {d.Fqdn} using {updater.ProviderName}");
+                                }                                
                             } catch (Exception ex)
                             {
                                 Console.WriteLine($"Failed to update IP for {d.Fqdn}");
@@ -107,7 +113,7 @@ namespace DynDnsUpdater
             }
         }
 
-        private static List<string> CheckConfiguration(Configuration config, IAuthentication[] authMethods)
+        private static List<string> CheckConfiguration(Configuration config, IAuthentication[] authMethods, IUpdateProvider[] updateProvider)
         {
             var errs = new List<string>();
             if (string.IsNullOrWhiteSpace(config.Settings.IpCheckHost))
@@ -120,12 +126,13 @@ namespace DynDnsUpdater
                 {
                     errs.Add("Name for service is missing");
                 }
-                if (string.IsNullOrWhiteSpace(provider.Url))
+                if (string.IsNullOrWhiteSpace(provider.Path))
                 {
                     errs.Add($"Url for {provider.Name} is missing");
                 }
-                if (!authMethods.Any(auth => auth.Name.Equals(provider.Auth, StringComparison.OrdinalIgnoreCase))) {
-                    errs.Add($"Authentication method ({provider.Auth}) not implemented for {provider.Name}");
+                if (!updateProvider.Any(prov => prov.ProviderName.Equals(provider.Type, StringComparison.OrdinalIgnoreCase)))
+                {
+                    errs.Add($"Provider-Type {provider.Type} not implemented for {provider.Name}");
                 }
             }
             foreach(var domain in config.Domains)

@@ -11,6 +11,15 @@ namespace DynDnsUpdater
         void AttachAuthentication(HttpWebRequest request, Domain domainData);
     }
 
+    public class NoneAuthorization : IAuthentication
+    {
+        public string Name => "None";
+
+        public void AttachAuthentication(HttpWebRequest request, Domain domainData)
+        {
+        }
+    }
+
     public class BasicAuthorization : IAuthentication
     {
         public string Name => "Basic";

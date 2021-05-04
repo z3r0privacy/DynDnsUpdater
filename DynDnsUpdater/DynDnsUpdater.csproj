@@ -9,6 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="smblibrary" Version="1.4.6.1" />
+    <PackageReference Include="ssh.net" Version="2020.0.1" />
+    <PackageReference Include="system.management" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

@@ -19,14 +19,11 @@ namespace DynDnsUpdater
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
+        [JsonPropertyName("path")]
+        public string Path { get; set; }
 
-        [JsonPropertyName("auth")]
-        public string Auth { get; set; }
-
-        [JsonPropertyName("httpMethod")]
-        public string HttpMethod { get; set; }
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
     }
 
     public class Domain
