@@ -85,6 +85,7 @@ namespace DynDnsUpdater
                                 } else
                                 {
                                     Console.WriteLine($"Failed to update IP for {d.Fqdn} using {updater.ProviderName}");
+                                    success = false;
                                 }                                
                             } catch (Exception ex)
                             {
